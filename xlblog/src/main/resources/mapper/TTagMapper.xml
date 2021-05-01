@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xlblog.blog.mapper.TTagMapper">
+
+    <resultMap id="myGetAllTagMap" type="com.xlblog.blog.entity.TTag">
+        <result property="id" column="tags_id"/>
+        <result property="countTag" column="count_tag"/>
+        <result property="name" column="tagname"/>
+    </resultMap>
+
+    <select id="getAllTag" resultMap="myGetAllTagMap">
+        select tags_id,count(*) as count_tag,t2.name as tagname
+        from t_blog_tags left join t_tag t2 on t_blog_tags.tags_id = t2.id
+        group by tags_id
+    </select>
+
+</mapper>

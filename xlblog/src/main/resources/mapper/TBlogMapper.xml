@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xlblog.blog.mapper.TBlogMapper">
+
+    <!--自定义Map-->
+    <resultMap id="MyBlogMap" type="com.xlblog.blog.entity.TBlog">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="description" property="description"/>
+        <result column="first_picture" property="firstPicture"/>
+        <result column="content" property="content"/>
+        <result column="flag" property="flag"/>
+        <result column="published" property="published"/>
+        <result column="share_statement" property="shareStatement"/>
+        <result column="views" property="views"/>
+        <result column="user_id" property="userId"/>
+        <result column="comment_count" property="commentCount"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="is_delete" property="isDelete"/>
+        <result column="type_id" property="typeId"/>
+        <collection property="tUser" ofType="com.xlblog.blog.entity.TUser">
+            <result column="username" property="username"/>
+            <result column="avatar" property="avatar"/>
+            <result column="email" property="email"/>
+        </collection>
+        <collection property="tType" ofType="com.xlblog.blog.entity.TType">
+            <id column="type_id" property="id"/>
+            <result column="type_name" property="name"/>
+        </collection>
+        <collection property="tBlogTags" ofType="com.xlblog.blog.entity.TBlogTags">
+            <association property="tTag" javaType="com.xlblog.blog.entity.TTag">
+                <result column="tags_id" property="id"/>
+                <result column="tags_name" property="name"/>
+            </association>
+        </collection>
+    </resultMap>
+
+    <!--根据id查找博客并使用自定义映射文件-->
+    <select id="getByBlogId" resultMap="MyBlogMap">
+        select b.*,t.name as tags_name,t.id as tags_id,
+          t_type.id as type_id,t_type.name as type_name,t2.*
+        from t_blog_tags bt
+          left join t_blog b on bt.blogs_id = b.id
+          left join t_tag t on bt.tags_id = t.id
+          left join t_type on b.type_id = t_type.id
+          left join t_user t2 on b.user_id = t2.id
+        where blogs_id = #{id}
+
+    </select>
+
+    <!--前台分页查询-->
+    <select id="vuefindByPage" resultMap="MyBlogMap">
+        select tb.*,t_user.*,t_blog_tags.tags_id,
+          t_tag.id as tags_id,t_tag.name as tags_name,
+          t_type.id as type_id,t_type.name as type_name
+        from (select * from t_blog
+          where t_blog.published = true and t_blog.share_statement = true and t_blog.is_delete = false
+          order by t_blog.create_time desc
+          limit #{current},#{size} ) as tb
+        left join t_type on tb.type_id = t_type.id
+        left join t_user on tb.user_id = t_user.id
+        left join t_blog_tags on t_blog_tags.blogs_id = tb.id
+        left join t_tag on t_tag.id = t_blog_tags.tags_id
+
+         where 1=1
+            <if test="typeid != null and typeid !=''">
+                and type_id = #{typeid}
+            </if>
+            <if test="tagsid != null and tagsid !=''">
+                and tags_id = #{tagsid}
+            </if>
+
+    </select>
+
+    <!--查询所有博客-->
+    <select id="findAllBlog" resultMap="MyBlogMap">
+        select * from t_blog
+        where t_blog.published = true and t_blog.share_statement = true and t_blog.is_delete = false
+    </select>
+
+    <!--根据标题查找博客-->
+    <select id="getByTitle" resultMap="MyBlogMap">
+          select b.*,t.name as tags_name,t.id as tags_id,
+          t_type.id as type_id,t_type.name as type_name,t2.*
+        from t_blog_tags bt
+          left join t_blog b on bt.blogs_id = b.id
+          left join t_tag t on bt.tags_id = t.id
+          left join t_type on b.type_id = t_type.id
+          left join t_user t2 on b.user_id = t2.id
+        where title like '%' #{title} '%'
+    </select>
+
+    <!--&lt;!&ndash;更新评论总数&ndash;&gt;-->
+    <!--<update id="updateByComment">-->
+        <!---->
+    <!--</update>-->
+
+</mapper>

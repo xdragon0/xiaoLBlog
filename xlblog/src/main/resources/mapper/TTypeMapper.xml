@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xlblog.blog.mapper.TTypeMapper">
+
+    <resultMap id="myGetAllTypeMap" type="com.xlblog.blog.entity.TType">
+        <result property="id" column="type_id"/>
+        <result property="countType" column="count_type"/>
+        <result property="name" column="t2name"/>
+    </resultMap>
+
+    <select id="getAllType" resultMap="myGetAllTypeMap">
+        select type_id,count(*) as count_type,t2.name as t2name
+        from t_blog left join t_type t2 on t_blog.type_id = t2.id
+        group by type_id
+    </select>
+</mapper>
