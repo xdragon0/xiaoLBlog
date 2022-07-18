@@ -24,7 +24,7 @@
 
 前端-vueblog、xlvueblog
 - 1、输入 npm install 安装依赖。
-- 2、输入 npm run serve 启动项目即可。
+- 2、输入 npm run serve 启动项目即可(vueblog启动后登陆的账号：admin，密码：123)。
 - 3、浏览器访问：http://localhost:8080。
 
 
